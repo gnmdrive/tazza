@@ -1,0 +1,5 @@
+main: void (args: string[]) {
+    text: string = "Hello, World\n"
+    print(text);
+    n: int = 50; println((2 + n) * 2))
+}

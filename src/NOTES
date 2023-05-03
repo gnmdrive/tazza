@@ -1,0 +1,36 @@
+[TODO]: Start building the parser
+
+Procedures:
+  (1) Lexical Analysis
+      store information about every single token in the source code,
+      thinks like: file path, row, column, token text, token type
+      if a token is not recognized raise an error.
+  (2) Parsing
+      check statement and expression build, insert instructions into
+      the abstract syntax tree (ast), if wrong grammar is used, raise an error.
+  (3) Semantic Analysis
+      analyze source code and check for various types of errors like: 
+      identifiers name, scope rules, identifiers availability/bounding,
+      types checking and so on and so forth
+      !: errors that can be raised by C compiler (segfault, pointers, etc.)
+  (4) Code Generation
+      transpile instructions in C language, write C program and build it
+
+[INSTRUCTION SPLIT CHAR]: instruction can be splitted by using ';' (a semicolon)
+or you can type on the next line ('\n')
+
+[SCOPE CREATORS]: {} create a scope, each scope has got a level number, 
+multiple scope at the same level got a level number extension
+
+[SCOPE RULES]: Each identifiers has a level attribute where can be specified the 
+scope level, main function got level 1, so writing outside the main function will
+create a level 0 scope identifier. If programmer try to use an identifier which level
+is higher than current level, raise an error.
+!:Also check for multiple scope on the same level
+
+[MAIN FUNCTION]: The main function will look like something like this:
+main: void (args: string[]) {
+  println("Hello, World!")
+}
+!:Think of args passing
+

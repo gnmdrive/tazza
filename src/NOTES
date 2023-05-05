@@ -16,6 +16,13 @@ Procedures:
   (4) Code Generation
       transpile instructions in C language, write C program and build it
 
+[FEATURES]
+variables, types: (int, float, string, bool, array)
+control flow (if, else, elseif)
+loops (while, for)
+functions
+structs
+
 [INSTRUCTION SPLIT CHAR]: instruction can be splitted by using ';' (a semicolon)
 or you can type on the next line ('\n')
 

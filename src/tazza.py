@@ -20,14 +20,14 @@ def cmd_error_message(message: str, code=1):
     exit(code)
 
 def compilation_error(message: str, row: int, col: int, path: str, code=1):
-    print(f'[ERROR] {path}:{row}:{col}: {message}')
+    print(f'[ERROR] {path}:{row+1}:{col+1}: {message}')
     exit(code)
 
 @dataclass(slots=True, kw_only=True)
 class CmdDetail:
     file_path: str = ''
     execute: bool = False
-    action: bool = False
+    command: bool = False
     getc: bool = False
 
 TAZZA_EXTENSION = '.tazza'
@@ -61,7 +61,7 @@ def main():
             case '--getc':
                 detail.getc = True
             case 'build' | 'run':
-                detail.action = True
+                detail.command = True
                 if arg == 'run':
                     detail.execute = True
             case _:
@@ -74,10 +74,10 @@ def main():
                 detail.file_path = file_name
         i += 1
 
+    if not detail.command:
+        cmd_error_message(f'command not provided')
     if not detail.file_path:
         cmd_error_message(f'file not provided')
-    if not detail.action:
-        cmd_error_message(f'action not provided')
 
     print(detail)
 

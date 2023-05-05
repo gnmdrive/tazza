@@ -23,6 +23,14 @@ loops (while, for)
 functions
 structs
 
+[AFTER TOKENIZATION CONTROLS]
+- entry point research
+- variables name style (isidentifier() string method)
+- recognized symbols (unknown token type raise error)
+- parenthesis balance algorithm
+- scope controls
+- identifier calls (check parenthesis after function calls, verify if identifier exists)
+
 [INSTRUCTION SPLIT CHAR]: instruction can be splitted by using ';' (a semicolon)
 or you can type on the next line ('\n')
 

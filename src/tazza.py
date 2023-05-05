@@ -20,7 +20,7 @@ def cmd_error_message(message: str, code=1):
     exit(code)
 
 def compilation_error(message: str, row: int, col: int, path: str, code=1):
-    print(f'[ERROR] {path}:{row+1}:{col+1}: {message}')
+    print(f'[ERROR]: {path}:{row+1}:{col+1}: {message}')
     exit(code)
 
 @dataclass(slots=True, kw_only=True)
@@ -34,6 +34,9 @@ TAZZA_EXTENSION = '.tazza'
 
 class TokenType(Enum):
     UNKNOWN = auto()
+    STRING_LITERAL = auto()
+    CONST_NUMBER = auto()
+    IDENTIFIER = auto()
 
 @dataclass(slots=True, kw_only=True)
 class Token:
@@ -44,9 +47,9 @@ class Token:
 
 def find_end(predicate, begin: int, line: str) -> int:
     end = begin + 1
-    while predicate(line[end]):
+    while predicate(line, end):
         end += 1
-    return end + 1 if line[begin] == '"' else end
+    return end + 1 if line[begin] == '"' else end # return "****"
 
 def main():
     argv = sys.argv
@@ -83,36 +86,41 @@ def main():
 
     with open(detail.file_path, 'r') as f:
         SYMBOLS = '=;:(){}[]+-*/'
-        source: list[str] = f.read().splitlines()
+        source: list[str] = f.read().splitlines(keepends=True)
         list_of_tokens: list[Token] = []
         for row, line in enumerate(source):
             # for each line in source
             col, line_length = 0, len(line)
             while col < line_length:
+                token_type = TokenType.UNKNOWN
                 # each iteration append a token
                 token_begin, token_end = col, None
                 if line[col].isalpha():
-                    token_end = find_end(lambda c: c.isalpha(), token_begin, line) # keyword or identifier 
+                    token_end = find_end(lambda l, c: l[c].isalpha(), token_begin, line) # keyword or identifier 
+                    # token_type = get_token_from_alpha()
                 elif line[col] == '"':
-                    token_end = find_end(lambda c: c != '"', token_begin, line) # string literal 
+                    token_end = find_end(lambda l, c: l[c] != '"' or l[c-1] == '\\', token_begin, line) # string literal 
+                    token_type = TokenType.STRING_LITERAL
                 elif line[col].isnumeric():
-                    token_end = find_end(lambda c: c.isnumeric(), token_begin, line) # constant
+                    token_end = find_end(lambda l, c: l[c].isnumeric(), token_begin, line) # constant
+                    token_type = TokenType.CONST_NUMBER
                 elif line[col].isspace():
                     col += 1
-                    continue # try next col
+                    continue # next col
                 else:
                     # symbol
-                    if line[col] == '/' and line[col + 1] == '/':
+                    if line[col] == '/' and line[col + 1] in ['n', '/']:
                         break # no more token on this line
-                    if line[col] not in SYMBOLS:
-                        compilation_error(f'`{line[col]}` not recognized', row, col, detail.file_path)
                     token_end = token_begin + 1
+                    # if line[col] not in SYMBOLS:
+                    #     compilation_error(f'`{line[col]}` not recognized', row, col, detail.file_path)
+                    # token_type = get_token_from_symbol(line, token_begin, token_end)
+
                 
                 col = token_end
-                list_of_tokens.append(Token(txt=line[token_begin:token_end], row=row, col=token_begin))
+                list_of_tokens.append(Token(ttype=token_type, txt=line[token_begin:token_end], row=row, col=token_begin))
 
     __import__('pprint').pprint(list_of_tokens)
-
 
 if __name__ == '__main__':
     main()
